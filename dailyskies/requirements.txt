@@ -1,0 +1,18 @@
+requests
+pandas
+matplotlib
+numpy
+scikit-learn
+requests
+pandas
+matplotlib
+numpy
+scikit-learn
+pytz
+base_dir = os.path.dirname(os.path.abspath(__file__))
+    rain_model = load_pkl(os.path.join(base_dir, 'models', 'rain_model.pkl'))
+    temp_model = load_pkl(os.path.join(base_dir, 'models', 'temp_model.pkl'))
+    hum_model = load_pkl(os.path.join(base_dir, 'models', 'humidity_model.pkl'))
+    scaler = load_pkl(os.path.join(base_dir, 'models', 'scaler.pkl'))
+    le = load_pkl(os.path.join(base_dir, 'models', 'wind_dir_encoder.pkl'))
+    return rain_model, temp_model, hum_model, scaler, le

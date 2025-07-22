@@ -1,0 +1,278 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DailySkies - Weather Forecast</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap" rel="stylesheet">
+    <script>
+        // Welcome message speech synthesis
+        
+         window.onload = function() {
+        if (!sessionStorage.getItem("welcomeMessageSpoken")) {
+            const welcomeMsg = new SpeechSynthesisUtterance("Welcome to DailySkies, created by Ritika");
+            welcomeMsg.lang = 'en-US';
+            window.speechSynthesis.speak(welcomeMsg);
+            sessionStorage.setItem("welcomeMessageSpoken", "true");
+        }
+    }
+
+        function startDictation() {
+            if (window.hasOwnProperty('webkitSpeechRecognition')) {
+                var recognition = new webkitSpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = "en-US";
+                recognition.start();
+
+                recognition.onresult = function(e) {
+                    let transcript = e.results[0][0].transcript.trim();
+                    document.getElementById('city-input').value = transcript;
+                    document.getElementById('city-form').submit();
+                };
+
+                recognition.onerror = function(e) {
+                    recognition.stop();
+                }
+            }
+        }
+         function updateTime() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours % 12 || 12;
+        const displayMinutes = minutes < 10 ? '0' + minutes : minutes;
+        const formattedTime = `${displayHours}:${displayMinutes} ${ampm}`;
+        document.getElementById('live-time').textContent = formattedTime;
+    }
+
+    updateTime(); // initial call
+    setInterval(updateTime, 1000); // update every second
+    </script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            color: #ffffff;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            transition: background 0.5s ease;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            height: 100vh;
+            backdrop-filter: blur(10px);
+        }
+
+        .left, .right {
+            flex: 1 1 100%;
+            padding: 40px;
+        }
+
+        @media(min-width: 768px) {
+            .left {
+                flex: 1;
+                border-top-left-radius: 20px;
+                border-bottom-left-radius: 20px;
+            }
+
+            .right {
+                flex: 2;
+                border-top-right-radius: 20px;
+                border-bottom-right-radius: 20px;
+            }
+        }
+
+        .left {
+            background-color: rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .left h1 {
+            font-size: 70px;
+            margin: 0;
+        }
+
+        .left h3 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #00e676;
+        }
+
+        .left p {
+            margin: 10px 0;
+            font-size: 20px;
+        }
+
+        .right {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .search-box {
+            text-align: right;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            width: 250px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        input[type="submit"], button.voice-btn {
+            padding: 12px 20px;
+            border: none;
+            background-color: #00e5ff;
+            color: black;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button.voice-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button.voice-btn::after {
+            content: '🎤';
+            font-size: 18px;
+            margin-left: 6px;
+        }
+        .hourly-forecast {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between; /* evenly spread cards */
+            gap: 20px;}
+
+        .hour-card {
+            flex: 1 1 calc(14.28% - 20px); /* 100% ÷ 7 - gap */
+            min-width: 80px;
+            max-width: 100px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            backdrop-filter: blur(5px);}
+
+
+        .hour-card img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+        }
+
+        .hour-card p {
+            margin: 8px 0;
+        }
+
+        .label {
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .value {
+            font-size: 22px;
+        }
+
+    .brand-header {
+    width: 100%;
+    padding: 20px 30px;
+    background-color: transparent;
+    text-align: left;}
+
+    .brand {
+    font-size: 48px;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+    animation: bubble-pop 3s ease-in-out infinite;}
+
+
+        .error {
+            color: #ff5252;
+            font-weight: bold;
+        }
+
+        @keyframes bubble-pop {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.08);
+            }
+        }
+    </style>
+</head>
+<body class="clear day">
+    <header class="brand-header">
+    <div class="brand">DailySkies</div>
+    </header>
+    <div class="container">
+        <div class="left">
+            <!-- Weather condition icon -->
+            <div style="width: 160px; height: 160px; border-radius: 20px; overflow: hidden; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; margin-bottom: 25px;">
+                <img src="{% static 'photos/logo.png' %}" alt="Logo" class="weather-icon" style="width: 150px; height: 150px; object-fit: contain; border-radius: 16px;">
+            </div>
+            <h3>{{ location }}, {{ country }}</h3>
+            <h1>{{ temperature|floatformat:1 }}°C</h1>
+            <p>Feels like: {{ feels_like|floatformat:1 }}°C</p>
+            <p>{{ humidity }}% humidity</p>
+    
+        <p>{{ description|title }}</p>
+    </div>
+
+        <div class="right">
+            <div class="search-box">
+                <form id="city-form" method="POST">
+                    {% csrf_token %}
+                    <input type="text" id="city-input" name="city" placeholder="Enter city name" required>
+                    <button type="button" onclick="startDictation()" class="voice-btn"></button>
+                    <input type="submit" value="Search">
+                </form>
+                {% if error %}<p class="error">{{ error }}</p>{% endif %}
+            </div>
+            <h2>Weather Forecast</h2>
+            <p>{{ date }} - {{ time|date:"h:i A" }}</p>
+            <p>Wind: {{ wind }} at {{ wind_speed }} m/s. Pressure: {{ pressure }} mb. Visibility: {{ visibility }}</p>
+            <p>Max: {{ temp_max|floatformat:1 }}°C, Min: {{ temp_min|floatformat:1 }}°C</p>
+            <div class="hourly-forecast">
+                {% for t, temp, hum, rain in future_data %}
+                    <div class="hour-card">
+                        {% if temp > 30 %}
+                            <img src="https://cdn-icons-png.flaticon.com/512/869/869869.png" alt="Sunny">
+                        {% elif rain %}
+                            <img src="https://cdn-icons-png.flaticon.com/512/414/414974.png" alt="Rain">
+                        {% elif hum > 80 %}
+                            <img src="https://cdn-icons-png.flaticon.com/512/414/414927.png" alt="Cloudy">
+                        {% else %}
+                            <img src="https://cdn-icons-png.flaticon.com/512/869/869869.png" alt="Partly Cloudy">
+                        {% endif %}
+                        <p class="label">{{ t|date:"H:i" }}</p>
+                        <p class="value">{{ temp|floatformat:1 }}°</p>
+                        <p>Humidity: {{ hum|floatformat:1 }}%</p>
+                        <p>Rain: {{ rain|yesno:"Yes,No" }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
